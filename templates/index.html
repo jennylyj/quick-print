@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>快速列印傳輸站</title>
+    <title>這是一隻隨身蝶</title>
     <style>
         body { font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; text-align: center; }
         .box { border: 2px dashed #aaa; padding: 20px; margin: 20px 0; border-radius: 10px; }
@@ -14,13 +14,13 @@
     </style>
 </head>
 <body>
-    <h1>🖨️ 快速列印傳輸站</h1>
-    <p>手機上傳 -> 電腦輸入代碼 -> 下載列印</p>
+    <h1>這是一隻隨身蝶嗎</h1>
+    <p>蝴蝶起飛 -> 蝴蝶飛 -> 蝴蝶降落</p>
 
     <!-- 如果刚刚有上傳成功，顯示代碼 -->
     {% if new_code %}
     <div style="background-color: #e8f5e9; padding: 20px; border-radius: 10px;">
-        <h2>檔案上傳成功！</h2>
+        <h2>蝴蝶成功起飛！</h2>
         <p>請在公用電腦輸入此代碼 (10分鐘內有效)</p>
         <div class="code-display">{{ new_code }}</div>
         <a href="/">返回首頁</a>
@@ -52,5 +52,6 @@
     {% endif %}
     
     <p class="instruction">注意：為確保隱私，檔案將在 10 分鐘後自動刪除。</p>
+    <p class="instruction">Jun Studio v.1</p>
 </body>
 </html>

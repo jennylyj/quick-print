@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>快速列印傳輸站</title>
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; text-align: center; }
+        .box { border: 2px dashed #aaa; padding: 20px; margin: 20px 0; border-radius: 10px; }
+        input[type="text"] { padding: 10px; font-size: 1.2em; width: 100px; text-align: center; }
+        button { padding: 10px 20px; font-size: 1em; background-color: #4CAF50; color: white; border: none; cursor: pointer; border-radius: 5px;}
+        .code-display { font-size: 3em; color: #d9534f; font-weight: bold; margin: 20px 0; }
+        .instruction { color: #666; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <h1>🖨️ 快速列印傳輸站</h1>
+    <p>手機上傳 -> 電腦輸入代碼 -> 下載列印</p>
+
+    <!-- 如果刚刚有上傳成功，顯示代碼 -->
+    {% if new_code %}
+    <div style="background-color: #e8f5e9; padding: 20px; border-radius: 10px;">
+        <h2>檔案上傳成功！</h2>
+        <p>請在公用電腦輸入此代碼 (10分鐘內有效)</p>
+        <div class="code-display">{{ new_code }}</div>
+        <a href="/">返回首頁</a>
+    </div>
+    {% else %}
+
+    <!-- 區塊一：我要上傳 (給手機用) -->
+    <div class="box">
+        <h3>📤 我要上傳檔案</h3>
+        <form method="POST" enctype="multipart/form-data">
+            <input type="file" name="file" required>
+            <br><br>
+            <button type="submit">取得提取碼</button>
+        </form>
+    </div>
+
+    <hr>
+
+    <!-- 區塊二：我要下載 (給公用電腦用) -->
+    <div class="box">
+        <h3>📥 我要下載檔案</h3>
+        <form action="/download" method="POST">
+            <p>輸入 4 位數代碼：</p>
+            <input type="text" name="code" maxlength="4" placeholder="0000" required>
+            <br><br>
+            <button type="submit">下載檔案</button>
+        </form>
+    </div>
+    {% endif %}
+    
+    <p class="instruction">注意：為確保隱私，檔案將在 10 分鐘後自動刪除。</p>
+</body>
+</html>

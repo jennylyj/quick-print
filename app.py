@@ -1,7 +1,9 @@
 import os
+import uuid
 import random
 import time
-from flask import Flask, render_template, request, send_from_directory, abort
+from flask import Flask, render_template, request, send_from_directory, flash, redirect
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
@@ -9,6 +11,8 @@ app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
 # 設定：檔案保留時間 (秒)，這裡設為 600 秒 = 10 分鐘
 FILE_TTL = 600 
+# 設定：允許的檔案類型
+ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg', 'zip'}
 
 # 確保 uploads 資料夾存在
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -46,6 +50,9 @@ def cleanup_expired_files():
         # 從字典中移除
         del files_db[code]
 
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     """首頁：上傳檔案 OR 輸入代碼"""
@@ -67,13 +74,20 @@ def index():
                 
                 # 為了防止檔名重複或危險，這裡可以改名，但為了方便辨識我們先保留原檔名
                 # (進階做法是使用 uuid 改名)
-                filename = file.filename
-                save_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+                # 1. 先淨化原檔名 (預防路徑攻擊)
+                original_name = secure_filename(file.filename)
+
+                # 2. 重新命名為 UUID (徹底防重複、防惡意字元)
+                ext = os.path.splitext(original_name)[1]
+                random_name = f"{uuid.uuid4()}{ext}"
+
+                save_path = os.path.join(app.config['UPLOAD_FOLDER'], random_name)
                 file.save(save_path)
                 
                 # 記錄到我們的「資料庫」
                 files_db[code] = {
-                    'filename': filename,
+                    'filename': random_name,
                     'upload_time': time.time()
                 }
                 

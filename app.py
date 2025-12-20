@@ -86,8 +86,10 @@ def index():
                 file.save(save_path)
                 
                 # 記錄到我們的「資料庫」
+                # 同時保存使用者上傳的原始檔名（淨化後）以便讓下載時還原檔名
                 files_db[code] = {
                     'filename': random_name,
+                    'display_name': original_name,
                     'upload_time': time.time()
                 }
                 
@@ -104,8 +106,13 @@ def download():
     
     if code in files_db:
         filename = files_db[code]['filename']
-        # 讓使用者下載檔案
-        return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
+        display_name = files_db[code].get('display_name')
+        # 嘗試在不同 Flask 版本中傳回下載檔名（Flask>=2.0: download_name, 舊版: attachment_filename）
+        try:
+            return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=True, download_name=display_name)
+        except TypeError:
+            # fallback for older Flask versions
+            return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=True, attachment_filename=display_name)
     else:
         return "找不到檔案或代碼已過期！", 404
 
